@@ -1,0 +1,21 @@
+# Build output - binaries and build folders are never committed
+build/
+dist/
+*.deb
+*.exe
+*.msi
+*.AppImage
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+*.egg-info/
+
+# Local run data and editor files
+*.log
+.idea/
+.vscode/
+.DS_Store

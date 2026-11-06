@@ -1,0 +1,4 @@
+-r requirements-build.txt
+pytest
+numpy
+pillow

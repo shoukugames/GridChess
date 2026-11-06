@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Grid Chess: Blitz Edition
+Name[ja]=グリッドチェス ブリッツ・エディション
+GenericName=Chess Notation Trainer
+GenericName[ja]=チェス棋譜トレーナー
+Comment=Play chess against the CPU by typing every move (e2e4, Nf3) against the clock (ages 10+)
+Comment[ja]=すべての手をキーボードで入力してCPUと対局するチェス（10才以上）
+Exec=gridchess
+Icon=gridchess
+Terminal=false
+Categories=Game;BoardGame;Education;
+Keywords=chess;notation;typing;blitz;kids;coordinates;
