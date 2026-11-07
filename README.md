@@ -1,8 +1,8 @@
-# Grid Chess: Blitz Edition v0.1.0
+# Grid Chess: Blitz Edition v0.1.1
 
 **Type your moves. Beat the clock. Master the grid.** · **手を入力して、時間と勝負。マス目をマスターしよう！**
 
-Grid Chess: Blitz Edition is a high-speed chess notation trainer for **ages 10+**, in
+Grid Chess: Blitz Edition is a high-speed chess notation trainer for **ages 8+**, in
 **English and Japanese**. You play a full game of chess against the CPU, but there
 is no dragging and no clicking on pieces: **every move is typed** using the real
 chess board grid, either square to square (`e2e4`, `g1f3`) or in real chess
@@ -11,9 +11,9 @@ Hard) you must think fast and type faster.
 
 - Creator: **Shawn Rapaz**, with **Claude Code**
 - Website: <https://shoukugames.org/> · Email: <info@shoukugames.org>
-- Release: v0.1.0, 2026-11-07
+- Release: v0.1.1, 2026-11-07
 - License: **GNU GPL v3.0** (see [LICENSE](LICENSE))
-- Recommended ages: **10+**
+- Recommended ages: **8+**
 
 ## Features
 
@@ -30,6 +30,10 @@ Hard) you must think fast and type faster.
 - **Typing trainer**: every mistake gets a clear explanation ("there's no piece
   of yours on e3", "that would leave your king in check", "two knights can go
   there, write Nbd2").
+- **Every move is announced**: after the CPU moves, the message line says
+  what it played in notation ("CPU played Nxe4."), whether it took one of
+  your pieces, and whether your king is in check. Your own captures show
+  "You took a Knight! +200".
 - **Movement guide on Easy only**: on Easy, typing the first square lights up
   that piece and every square it can legally reach, a complete move shows a
   green arrow before you press Enter, and a refused move lists where that piece
@@ -96,8 +100,8 @@ Lower case piece letters (`nf3`) are understood too. `+` and `#` are optional.
 
 ## Install
 
-- **Windows**: run `GridChess-v0.1.0.exe` (a single file, nothing to install).
-- **Debian / Ubuntu**: `sudo apt install ./gridchess_v0.1.0_amd64.deb`, then start
+- **Windows**: run `GridChess-v0.1.1.exe` (a single file, nothing to install).
+- **Debian / Ubuntu**: `sudo apt install ./gridchess_v0.1.1_amd64.deb`, then start
   *Grid Chess: Blitz Edition* from the menu or run `gridchess`.
 - **From source** (Python 3.10+):
 
@@ -109,12 +113,19 @@ Lower case piece letters (`nf3`) are understood too. `+` and `#` are optional.
 Saved settings, scores and progress live in `%APPDATA%\GridChess` on Windows and
 `~/.local/share/gridchess` on Linux.
 
+## Changes
+
+- **v0.1.1**: recommended age is now 8+. The CPU's move is announced after
+  every turn ("CPU played Nxe4."), with notes when it takes one of your
+  pieces or puts you in check, and your captures show "You took a Knight! +200".
+- **v0.1.0**: first release.
+
 ## Building the installers
 
 ```
 ./build.sh                       # both
-packaging/build_linux.sh         # dist/gridchess_v0.1.0_amd64.deb
-packaging/build_windows.sh       # dist/GridChess-v0.1.0.exe (built under Wine)
+packaging/build_linux.sh         # dist/gridchess_v0.1.1_amd64.deb
+packaging/build_windows.sh       # dist/GridChess-v0.1.1.exe (built under Wine)
 ```
 
 The Linux build needs `python3-venv` and `dpkg-deb`. The Windows build runs

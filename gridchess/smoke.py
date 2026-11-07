@@ -94,6 +94,8 @@ def smoke_test(out_path=None):
             frames(game, 2)
             while not game.player_turn():
                 frames(game, 2, dt=0.1)
+            if colour == BLACK:
+                assert game.message[0].startswith("CPU played "), "CPU move not announced"
             if game.board.turn == colour:
                 before = game.board.fen()
                 type_text(game, "z9z9")

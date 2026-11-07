@@ -194,6 +194,7 @@ class GameScene(Scene):
                 pts = POINTS.get(kind, 0)
                 self.score += pts
                 self.popups.add(f"+{pts}", self.sq_center(cap_sq), art.GOLD, 36)
+                self.say(t("you_took", p=piece_name(info["captured"]), n=pts), art.GOLD, 5)
                 self.particles.burst(self.sq_center(cap_sq), art.GOLD)
             else:
                 self.lost.append(info["captured"])
@@ -221,8 +222,13 @@ class GameScene(Scene):
             return
         if self.board.turn == self.player:
             self.begin_player_turn()
+            # Say what the CPU just did, so the player can find it by its notation
+            text = t("cpu_played", m=info["san"])
+            if info["captured"] != ".":
+                text += " " + t("cpu_took", p=piece_name(info["captured"]))
             if info["check"]:
-                self.say(t("you_in_check"), art.RED, 5)
+                text += " " + t("you_in_check")
+            self.say(text, art.RED if info["check"] or info["captured"] != "." else art.CYAN, 6)
         else:
             self.field.active = False
 

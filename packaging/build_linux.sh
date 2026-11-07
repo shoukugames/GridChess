@@ -55,7 +55,7 @@ Recommends: libgl1, libasound2
 Installed-Size: $SIZE
 Maintainer: Shouku Games <info@shoukugames.org>
 Homepage: https://shoukugames.org/
-Description: Chess notation and typing trainer for ages 10+, in English and Japanese
+Description: Chess notation and typing trainer for ages 8+, in English and Japanese
  Grid Chess: Blitz Edition is a full-rules chess game against the CPU where
  every move is typed using real board coordinates (e2e4) or algebraic
  notation (Nf3, exd5, O-O). Blitz Play gives 60 seconds per turn (30 on
