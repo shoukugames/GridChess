@@ -19,3 +19,10 @@ subprocess.run([sys.executable, "-m", "pygbag", "--build", "--title", "Grid Ches
                 "--icon", "assets/icon.png", "."], cwd=ROOT, env=env, check=True,
                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 print("build/web ready: upload index.html, gridchess.apk, gridchess.tar.gz and favicon.png")
+
+# pygbag sometimes sizes the canvas before the game has opened its window, squeezing the game
+# into a square: add a small script that keeps it the game's shape (tools/web_canvas_fix.py).
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import web_canvas_fix  # noqa: E402
+
+web_canvas_fix.apply(os.path.join(ROOT, "build", "web", "index.html"))
