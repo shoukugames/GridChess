@@ -98,6 +98,23 @@ recorded in the Parents section. Blitz games can enter the Top 10.
 
 Lower case piece letters (`nf3`) are understood too. `+` and `#` are optional.
 
+## Play in the browser
+
+Grid Chess also runs in a web browser, on computers, phones and tablets, with nothing to
+install: <https://shoukugames.org/play/gridchess/> (test page). On touch screens, tap one of
+your pieces and then the square it moves to: the move is written into the move box in chess
+notation and played. At the end of a Blitz game, tap the name box to save your score under the
+last name used. Settings and scores are saved in the browser.
+
+```bash
+python3 -m pip install pygame pygbag     # plus ffmpeg on PATH (or FFMPEG=/path/to/ffmpeg)
+python3 tools/build_web.py               # -> build/web/: upload the folder as-is
+```
+
+The build uses [pygbag](https://pygame-web.github.io/), which also converts the sounds to OGG.
+`main.py` is the web entry point; the browser-only parts switch on only in the browser.
+`gridchess.apk` is pygbag's name for its bundle of game files; it is not an Android app.
+
 ## Install
 
 - **Windows**: run `GridChess-v0.1.1.exe` (a single file, nothing to install).

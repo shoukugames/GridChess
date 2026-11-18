@@ -4,7 +4,7 @@ import random
 
 import pygame
 
-from .. import __version__, art, storage
+from .. import WEB, __version__, art, storage
 from ..app import Scene, W, H
 from ..chess import Board
 from ..i18n import t
@@ -27,8 +27,7 @@ class TitleScene(Scene):
             (lambda: t("parents"), self.parents, art.CYAN),
             (lambda: t("style"), self.style, art.CYAN),
             (lambda: t("credits"), self.credits, art.CYAN),
-            (lambda: t("quit"), self.quit, art.RED),
-        ]
+        ] + ([] if WEB else [(lambda: t("quit"), self.quit, art.RED)])  # a web page has nothing to quit to
         self.buttons = [Button((x, y + i * (h + gap), w, h), label, action, 24, accent)
                         for i, (label, action, accent) in enumerate(entries)]
         cx = 450
@@ -97,7 +96,7 @@ class TitleScene(Scene):
             if wdg.handle(event, self.app.audio):
                 return
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
+            if event.key == pygame.K_ESCAPE and not WEB:
                 self.quit()
             elif event.key in (pygame.K_RETURN, pygame.K_SPACE):
                 self.play_blitz()

@@ -19,3 +19,6 @@ venv/
 .idea/
 .vscode/
 .DS_Store
+
+# pygbag working copies (tools/build_web.py)
+*-pygbag.*

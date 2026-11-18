@@ -6,7 +6,7 @@ import time
 
 import pygame
 
-from .. import art, storage
+from .. import WEB, art, storage
 from ..ai import Searcher
 from ..app import Scene, W, H
 from ..chess import Board, WHITE, BLACK, parse_square, square_name
@@ -64,6 +64,7 @@ class GameScene(Scene):
         self.saved_rank = None
         self.recorded = False
         self.hover_sq = None
+        self.tap_from = None        # touch screens: the piece picked up by a tap
         self.check_flash = 0.0
         self.pieces = app.settings["pieces"]
         self.theme = app.settings["board"]
@@ -133,6 +134,31 @@ class GameScene(Scene):
             move, _err = self.board.parse(text)
             if move:
                 self.preview_move = move
+
+    def tap_square(self, sq):
+        """Touch screens: tap one of your pieces, then where it goes. The move is written into the
+        move box in chess notation (so it is still learned) and played."""
+        piece = self.board.sq[sq]
+        mine = piece != "." and piece.isupper() == (self.player == WHITE)
+        frm = self.tap_from
+        if frm is not None and sq in self.preview_dests:
+            moves = [m for m in self.board.piece_moves_from(frm) if m[1] == sq]
+            move = next((m for m in moves if m[2] in ("", "q")), moves[0])
+            self.tap_from = None
+            self.field.value = self.board.san(move)
+            self.submit()
+            return
+        if mine:
+            self.tap_from = sq
+            self.field.value = square_name(sq)
+            self.preview_from = sq
+            self.preview_dests = sorted({m[1] for m in self.board.piece_moves_from(sq)})
+            self.preview_move = None
+            self.app.audio.play("click")
+        else:
+            self.tap_from = None
+            self.field.value = ""
+            self.preview_from, self.preview_dests, self.preview_move = None, [], None
 
     def submit(self):
         text = self.field.value.strip()
@@ -243,7 +269,12 @@ class GameScene(Scene):
                 holder["done"] = True
         self.thinking = holder
         self.cpu_started = time.time()
-        threading.Thread(target=work, daemon=True).start()
+        if WEB:
+            # Browsers run no Python threads: think on the next frame (after "thinking" is shown).
+            # The search stops at its time limit, so the pause is short.
+            holder["work"] = work
+        else:
+            threading.Thread(target=work, daemon=True).start()
 
     def timeout(self):
         self.score -= TIMEOUT_PENALTY
@@ -317,6 +348,11 @@ class GameScene(Scene):
     def handle(self, event):
         audio = self.app.audio
         if self.over:
+            if self.name_field and self.app.touch and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 \
+                    and self.name_field.rect.collidepoint(event.pos):
+                # Touch screens have no keyboard: tapping the name box saves under the last name used.
+                self.save_name()
+                return
             if self.name_field:
                 res = self.name_field.handle(event, audio)
                 if res == "submit":
@@ -352,6 +388,11 @@ class GameScene(Scene):
             if event.type == pygame.KEYDOWN or (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1):
                 self.banner = 0.4      # any key or click skips the intro banner
             return
+        if self.player_turn() and self.app.touch and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            sq = self.view.square_at(event.pos)
+            if sq is not None:
+                self.tap_square(sq)
+                return
         if self.player_turn():
             res = self.field.handle(event, audio)
             if res == "submit":
@@ -396,6 +437,8 @@ class GameScene(Scene):
             if self.thinking is None:
                 if self.banner < 1.6:
                     self.start_cpu()
+            elif self.thinking.get("work"):
+                self.thinking.pop("work")()
             elif self.thinking["done"] and time.time() - self.cpu_started >= CPU_MIN_SECONDS:
                 move = self.thinking["move"]
                 self.thinking = None
