@@ -1,0 +1,70 @@
+name: Windows build
+
+# Builds the Windows .exe on GitHub's Windows machines (no Wine needed).
+#   - every push to main: the .exe is kept as a download on the run's page for 30 days
+#   - a tag such as v1.2.3: the .exe is also attached to that GitHub release
+#   - or start it by hand: Actions -> Windows build -> Run workflow
+# The .exe is not code-signed: building on GitHub doesn't sign it, so Windows SmartScreen can
+# still warn about it until a code-signing certificate is added.
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: bash
+    env:
+      PYGAME_HIDE_SUPPORT_PROMPT: "1"
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install build tools
+        run: |
+          python -m pip install -r requirements-build.txt
+      - name: Build
+        run: |
+          VERSION="$(sed -n 's/^__version__ = "\(.*\)"/\1/p' gridchess/__init__.py)"
+          IFS=. read -r V1 V2 V3 <<< "$VERSION"
+          mkdir -p build
+          # The version details come from the repo's own Wine build script.
+          eval "$(sed -n '/^cat > build\/version_info.txt <<VERSIONINFO$/,/^VERSIONINFO$/p' packaging/build_windows.sh)"
+          test -s build/version_info.txt
+          python -m PyInstaller --noconfirm --clean --log-level WARN --distpath dist --workpath build/pyi-win packaging/gridchess.spec
+          echo "EXE=dist/GridChess-v$VERSION.exe" >> "$GITHUB_ENV"
+      - name: Show what was built
+        run: |
+          for f in "$EXE"; do
+            echo "::notice title=Built $(basename "$f")::$(du -h "$f" | cut -f1), sha256 $(sha256sum "$f" | cut -d' ' -f1)"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GridChess-windows
+          path: |
+            dist/*.exe
+          if-no-files-found: error
+          retention-days: 30
+      - name: Smoke test (start the .exe)
+        run: |
+          SMOKE="$RUNNER_TEMP/smoke.txt"
+          SDL_AUDIODRIVER=dummy GRIDCHESS_DATA="$(cygpath -w "$RUNNER_TEMP/game-data")" timeout 300 "$EXE" --smoke-test "$(cygpath -w "$SMOKE")"
+          echo "Smoke test: $(cat "$SMOKE")"
+      - name: Attach to the release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes "Windows build from GitHub Actions (not code-signed)."
+          gh release upload "$GITHUB_REF_NAME" "$EXE" --clobber
