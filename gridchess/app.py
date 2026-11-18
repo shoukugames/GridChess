@@ -151,6 +151,9 @@ class App:
         return (int((pos[0] - ox) / scale), int((pos[1] - oy) / scale))
 
     def present(self):
+        if WEB and self.window.get_size() != (W, H):
+            # pygbag can resize the page canvas after the game opened it; ask for the real size again
+            self.window = pygame.display.set_mode((W, H))
         scale, ox, oy = self._transform()
         if abs(scale - 1) < 0.001 and ox == 0 and oy == 0:
             self.window.blit(self.canvas, (0, 0))
