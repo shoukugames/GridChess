@@ -1,0 +1,12 @@
+{
+ "_note": "Replace identity_name, publisher and publisher_display_name with the values from Partner Center (Product management -> Product identity) before uploading to the Microsoft Store.",
+ "identity_name": "ShoukuGames.GridChessBlitzEdition",
+ "publisher": "CN=ShoukuGamesPlaceholder",
+ "publisher_display_name": "Shouku Games",
+ "display_name": "Grid Chess: Blitz Edition",
+ "description": "Move the pieces by typing! Play real chess against the CPU by entering moves like e2e4 or Nf3, with only 60 seconds per turn.",
+ "file_name": "GridChessBlitzEdition",
+ "exe_name": "GridChessBlitzEdition.exe",
+ "alias": "shouku-gridchess.exe",
+ "device_capabilities": []
+}
